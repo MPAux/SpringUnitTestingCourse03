@@ -8,13 +8,12 @@ import com.luv2code.component.service.ApplicationService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.ApplicationContext;
+import org.springframework.boot.test.mock.mockito.MockBean;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -22,8 +21,8 @@ import static org.mockito.Mockito.when;
 @SpringBootTest(classes= MvcTestingExampleApplication.class)
 class MockAnnotationTest {
 
-    @Autowired
-    ApplicationContext context;
+    //@Autowired
+    //ApplicationContext context;
 
     @Autowired
     CollegeStudent studentOne;
@@ -31,11 +30,13 @@ class MockAnnotationTest {
     @Autowired
     StudentGrades studentGrades;
 
-    @Mock
+    //@Mock
+   @MockBean
     private ApplicationDao applicationDao;
 
-   @InjectMocks
-   private ApplicationService applicationService;
+    //@InjectMocks
+    @Autowired
+    private ApplicationService applicationService;
 
     @BeforeEach
     void beforeEach() {
@@ -53,23 +54,21 @@ class MockAnnotationTest {
                                 studentOne.getStudentGrades().getMathGradeResults()));
         verify(applicationDao).addGradeResultsForSingleClass(studentOne.getStudentGrades().getMathGradeResults());
         verify(applicationDao, times(1)).addGradeResultsForSingleClass(studentOne.getStudentGrades().getMathGradeResults());
-
     }
 
+    @DisplayName("Find Gpa")
+    @Test
+    void assertEqualsTestFindGpa() {
+        when(applicationDao.findGradePointAverage(studentGrades.getMathGradeResults()))
+                .thenReturn(88.31);
+        assertEquals(88.31, applicationDao.findGradePointAverage(studentGrades.getMathGradeResults()));
+    }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    @DisplayName("Not Null")
+    @Test
+    void testAssertNotNull() {
+        when(applicationDao.checkNull(studentGrades.getMathGradeResults())).thenReturn(true);
+        assertNotNull(applicationService.checkNull(studentOne.getStudentGrades().getMathGradeResults()));
+    }
 
 }
