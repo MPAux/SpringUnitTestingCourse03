@@ -80,9 +80,9 @@ class MockAnnotationTest {
         CollegeStudent nullStudent = (CollegeStudent) context.getBean("collegeStudent");
 
         doThrow(new RuntimeException()).when(applicationDao).checkNull(nullStudent);
-        assertThrows(RuntimeException.class, () -> {
-           applicationService.checkNull(nullStudent);
-        });
+        assertThrows(RuntimeException.class, () ->
+           applicationService.checkNull(nullStudent)
+        );
 
         verify(applicationDao, times(1)).checkNull(nullStudent);
     }
