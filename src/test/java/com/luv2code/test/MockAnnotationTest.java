@@ -11,9 +11,12 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.ApplicationContext;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -21,8 +24,8 @@ import static org.mockito.Mockito.when;
 @SpringBootTest(classes= MvcTestingExampleApplication.class)
 class MockAnnotationTest {
 
-    //@Autowired
-    //ApplicationContext context;
+    @Autowired
+    ApplicationContext context;
 
     @Autowired
     CollegeStudent studentOne;
@@ -70,5 +73,20 @@ class MockAnnotationTest {
         when(applicationDao.checkNull(studentGrades.getMathGradeResults())).thenReturn(true);
         assertNotNull(applicationService.checkNull(studentOne.getStudentGrades().getMathGradeResults()));
     }
+
+    @DisplayName("Throw runtime error")
+    @Test
+    void throwRuntimeError() {
+        CollegeStudent nullStudent = (CollegeStudent) context.getBean("collegeStudent");
+
+        doThrow(new RuntimeException()).when(applicationDao).checkNull(nullStudent);
+        assertThrows(RuntimeException.class, () -> {
+           applicationService.checkNull(nullStudent);
+        });
+
+        verify(applicationDao, times(1)).checkNull(nullStudent);
+    }
+
+
 
 }
